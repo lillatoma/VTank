@@ -24,13 +24,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeTimeProps) const override;
 
 
-	/** Time Threshold to know if it was a short press */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-		float ShortPressThreshold;
-
-	/** FX Class that we will spawn when clicking */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-		UNiagaraSystem* FXCursor;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -42,8 +35,7 @@ public:
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-		class UInputAction* SetDestinationTouchAction;
-
+		class UInputAction* ShootAction;
 
 	UFUNCTION(Server, Reliable)
 		void CallSimpleMove();
@@ -68,14 +60,8 @@ protected:
 
 	void OnSetDestinationTriggered();
 	void OnSetDestinationReleased();
-	void OnTouchTriggered();
-	void OnTouchReleased();
 
-private:
-
-
-	bool bIsTouch; // Is it a touch device
-	float FollowTime; // For how long it has been pressed
+	void OnLaunchCannonTriggered();
 };
 
 

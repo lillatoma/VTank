@@ -48,16 +48,40 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
-#pragma region RotationCorrection
+#pragma region Shooting
+public:
+	UFUNCTION(BlueprintCallable, Server, Reliable)
+		void TryShootCannon();
 
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly)
+		float ShootDelay = 1.0f;
+	UPROPERTY(EditAnyWhere, BlueprintReadOnly)
+		float ShotSpeed = 1000.0f;
+
+private:
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"), Category = "Prereqs")
+		TSubclassOf<AActor> CannonBallActor;
+
+
+	float ShootTimeRemaining = -1.f;
+#pragma endregion
+
+#pragma region Correction
+private:
 
 	FRotator CachedRotation;
+	FVector CachedLocation;
+
+public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void Multicast_Rotation(FRotator Rotation);
 
-	UFUNCTION(Server, Reliable)
-		void ShareRotationToServer(FRotator Rotation);
+	UFUNCTION(NetMulticast, Reliable)
+		void Multicast_Location(FVector Location);
+
+
 
 #pragma endregion
 };

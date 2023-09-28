@@ -6,6 +6,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "VTCannonBall.h"
+
+
 void AVTTankCharacter::AddMovementInput(FVector WorldDirection, float ScaleValue, bool bForce)
 {
 
@@ -96,6 +100,14 @@ void AVTTankCharacter::Tick(float DeltaTime)
 		CachedRotation = Rotation;
 		Multicast_Rotation(Rotation);
 	}
+	FVector Location = GetActorLocation();
+	if (Location != CachedLocation)
+	{
+		CachedLocation = Location;
+		Multicast_Location(Location);
+	}
+
+	ShootTimeRemaining -= DeltaTime;
 }
 
 // Called to bind functionality to input
@@ -105,13 +117,36 @@ void AVTTankCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 }
 
+void AVTTankCharacter::TryShootCannon_Implementation()
+{
+	if (ShootTimeRemaining <= 0.f)
+	{
+		FTransform SpawnTransform(FRotator(), GetActorLocation(), FVector(1, 1, 1));
+
+		AVTCannonBall* CannonBall = Cast<AVTCannonBall>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, CannonBallActor, SpawnTransform));
+		//Spawning the cannonball with the target passed
+		if (CannonBall)
+		{
+			FRotator Rotation = GetActorRotation();
+			FVector VelocityVector = Rotation.Vector() * ShotSpeed;
+
+			CannonBall->Mesh->SetPhysicsLinearVelocity(VelocityVector);
+			CannonBall->SetCharacterToIgnore(this);
+
+			UGameplayStatics::FinishSpawningActor(CannonBall, SpawnTransform);
+		}
+
+		ShootTimeRemaining = ShootDelay;
+	}
+}
+
 void AVTTankCharacter::Multicast_Rotation_Implementation(FRotator Rotation)
 {
 	SetActorRotation(Rotation, ETeleportType::None);
 }
 
-void AVTTankCharacter::ShareRotationToServer_Implementation(FRotator Rotation)
+void AVTTankCharacter::Multicast_Location_Implementation(FVector Location)
 {
-
+	SetActorLocation(Location);
 }
 
