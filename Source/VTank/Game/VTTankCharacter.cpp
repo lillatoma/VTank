@@ -129,11 +129,12 @@ void AVTTankCharacter::TryShootCannon_Implementation()
 		{
 			FRotator Rotation = GetActorRotation();
 			FVector VelocityVector = Rotation.Vector() * ShotSpeed;
-
-			CannonBall->Mesh->SetPhysicsLinearVelocity(VelocityVector);
-			CannonBall->SetCharacterToIgnore(this);
+			
+			CannonBall->SetOwner(this);
+			CannonBall->SetForcedVelocity(VelocityVector);
 
 			UGameplayStatics::FinishSpawningActor(CannonBall, SpawnTransform);
+
 		}
 
 		ShootTimeRemaining = ShootDelay;

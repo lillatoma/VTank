@@ -14,12 +14,20 @@
 #include "Net/UnrealNetwork.h"
 
 #include "VTTankCharacter.h"
+#include "VTGameModeBase.h"
+
+#include "../UI/VT_UISpawner.h"
+#include "Kismet/GameplayStatics.h"
+
+#include "VT_PlayerState.h"
+
 
 void AVTPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	//Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(AVTPlayerController, CachedDestination)
+	DOREPLIFETIME(AVTPlayerController, Score)
 }
 
 AVTPlayerController::AVTPlayerController()
@@ -43,16 +51,12 @@ void AVTPlayerController::BeginPlay()
 	}
 }
 
-void AVTPlayerController::CallSimpleMove_Implementation()
-{
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
-}
-
 
 void AVTPlayerController::ServerUpdateCachedDestination_Implementation(FVector Dest)
 {
 	CachedDestination = Dest;
 }
+
 
 void AVTPlayerController::SetupInputComponent()
 {
@@ -117,4 +121,101 @@ void AVTPlayerController::OnLaunchCannonTriggered()
 
 	if (Tank)
 		Tank->TryShootCannon();
+}
+
+void AVTPlayerController::GenerateRandomUsername()
+{
+	if (HasAuthority())
+	{
+
+		char* First[] = { "Elegant","Clever","Lazy","Awesome","Adorable","Basic","Better","Cute","Cautious","Calm","Desirable","Eternal","Fuzzy","Great" };
+		char* Second[] = { "Mushroom", "Dolphin", "Engine", "Pizza", "Kitten", "Actor", "Bee", "Cicada", "Tornado", "Lasso" };
+
+		int FirstNameMaxLength = 14;
+		int SecondNameMaxLength = 10;
+
+		AVT_PlayerState* State = GetPlayerState<AVT_PlayerState>();
+
+
+		Username = FString(First[FMath::RandRange(0, FirstNameMaxLength - 1)])
+			+ FString("_") + FString(Second[FMath::RandRange(0, SecondNameMaxLength - 1)]) + FString("_") + FString::FromInt(FMath::RandRange(0, 99));
+		if (State)
+			State->SetUsername(Username);
+		else UE_LOG(LogTemp, Warning, TEXT("Server: GenerateRandomUsername: State invalid"));
+	}
+	else UE_LOG(LogTemp, Warning, TEXT("Client called GenerateRandomUsername"));
+}
+
+void AVTPlayerController::CallUpdateUI()
+{
+	if (HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Authorized CallUpdateUI on %s"), *Username);
+		if (Spawner)
+			Spawner->CallUpdateScoreboard();
+	}
+	else CallUpdateUIClient();
+}
+
+void AVTPlayerController::CallUpdateUIClient_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("CallUpdateUI on %s"), *Username);
+	if (Spawner)
+		Spawner->CallUpdateScoreboard();
+}
+
+void AVTPlayerController::DelayedCallUpdateUI_Implementation()
+{
+	FTimerHandle Handle;
+	GetWorldTimerManager().SetTimer(Handle, this, &AVTPlayerController::CallUpdateUI, 1.f, false);
+}
+
+
+void AVTPlayerController::CallSimpleMove_Implementation()
+{
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
+}
+
+void AVTPlayerController::AddScore_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("%s scored"), *Username));
+	Score++;
+
+	if (Spawner)
+		Spawner->CallUpdateScoreboard();
+}
+
+
+void AVTPlayerController::SpawnUISpawner_Implementation()
+{
+	FTransform SpawnTransform(FRotator(), FVector(0,0,0), FVector(1, 1, 1));
+
+	Spawner = Cast<AVT_UISpawner>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, UISpawnerActor, SpawnTransform));
+	//Spawning the cannonball with the target passed
+	if (Spawner)
+	{
+
+		UGameplayStatics::FinishSpawningActor(Spawner, SpawnTransform);
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Spawner spawned")));
+	}
+}
+
+void AVTPlayerController::FindUISpawner_Implementation()
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Finding ui")));
+
+	FTransform SpawnTransform(FRotator(), FVector(0, 0, 0), FVector(1, 1, 1));
+
+	TArray<AActor*> PiecesArray;
+	UGameplayStatics::GetAllActorsOfClass(this, AVT_UISpawner::StaticClass(), PiecesArray);
+
+	if (PiecesArray.Num() == 0)
+		return;
+
+	Spawner = Cast<AVT_UISpawner>(PiecesArray[0]);
+
+	if (Spawner)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Spawner found")));
+	}
 }
