@@ -30,6 +30,5 @@ private:
 	UPROPERTY()
 		class AVTGameStateBase* StoredGameState;
 
-	bool FindGameMode();
 	bool FindGameState();
 };

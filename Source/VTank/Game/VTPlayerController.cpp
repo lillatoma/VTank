@@ -27,7 +27,6 @@ void AVTPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(AVTPlayerController, CachedDestination)
-	DOREPLIFETIME(AVTPlayerController, Score)
 }
 
 AVTPlayerController::AVTPlayerController()
@@ -35,7 +34,7 @@ AVTPlayerController::AVTPlayerController()
 	bReplicates = true;
 	bShowMouseCursor = true;
 	DefaultMouseCursor = EMouseCursor::Default;
-	CachedDestination = FVector::ZeroVector + FVector(100,0,0);
+	CachedDestination = FVector::ZeroVector;
 	
 }
 
@@ -102,8 +101,7 @@ void AVTPlayerController::OnSetDestinationTriggered()
 	APawn* ControlledPawn = GetPawn();
 	if (ControlledPawn != nullptr)
 	{
-		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation());// .GetSafeNormal();
-		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%.2f|%.2f|%.2f"), CachedDestination.X, CachedDestination.Y, CachedDestination.Z));
+		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
 	}
 }
 
@@ -137,7 +135,7 @@ void AVTPlayerController::GenerateRandomUsername()
 		AVT_PlayerState* State = GetPlayerState<AVT_PlayerState>();
 
 
-		Username = FString(First[FMath::RandRange(0, FirstNameMaxLength - 1)])
+		FString Username = FString(First[FMath::RandRange(0, FirstNameMaxLength - 1)])
 			+ FString("_") + FString(Second[FMath::RandRange(0, SecondNameMaxLength - 1)]) + FString("_") + FString::FromInt(FMath::RandRange(0, 99));
 		if (State)
 			State->SetUsername(Username);
@@ -146,20 +144,8 @@ void AVTPlayerController::GenerateRandomUsername()
 	else UE_LOG(LogTemp, Warning, TEXT("Client called GenerateRandomUsername"));
 }
 
-void AVTPlayerController::CallUpdateUI()
+void AVTPlayerController::CallUpdateUI_Implementation()
 {
-	if (HasAuthority())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Authorized CallUpdateUI on %s"), *Username);
-		if (Spawner)
-			Spawner->CallUpdateScoreboard();
-	}
-	else CallUpdateUIClient();
-}
-
-void AVTPlayerController::CallUpdateUIClient_Implementation()
-{
-	UE_LOG(LogTemp, Warning, TEXT("CallUpdateUI on %s"), *Username);
 	if (Spawner)
 		Spawner->CallUpdateScoreboard();
 }
@@ -176,14 +162,7 @@ void AVTPlayerController::CallSimpleMove_Implementation()
 	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 }
 
-void AVTPlayerController::AddScore_Implementation()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("%s scored"), *Username));
-	Score++;
 
-	if (Spawner)
-		Spawner->CallUpdateScoreboard();
-}
 
 
 void AVTPlayerController::SpawnUISpawner_Implementation()

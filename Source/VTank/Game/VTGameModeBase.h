@@ -9,14 +9,6 @@
 #include "VTGameModeBase.generated.h"
 
 
-USTRUCT(Blueprintable)
-struct FPlayerScoreboardInfo
-{
-	GENERATED_BODY()
-
-	FString Name;
-	int Score;
-};
 
 
 /**
@@ -34,10 +26,6 @@ public:
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
-	//UFUNCTION(Server, Reliable)
-		virtual TArray<FPlayerScoreboardInfo> GetScoreboardInfo();
-
-
 
 protected:
 	virtual void BeginPlay() override; 

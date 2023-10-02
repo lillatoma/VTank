@@ -94,19 +94,25 @@ void AVTTankCharacter::BeginPlay()
 void AVTTankCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FRotator Rotation = GetActorRotation();
-	if (Rotation != CachedRotation)
-	{
-		CachedRotation = Rotation;
-		Multicast_Rotation(Rotation);
-	}
-	FVector Location = GetActorLocation();
-	if (Location != CachedLocation)
-	{
-		CachedLocation = Location;
-		Multicast_Location(Location);
-	}
 
+	//Don't want to update from client, but need to make the movement, and rotation smoother :D
+	//And we only update when there is some movement
+	if (HasAuthority())
+	{
+
+		FRotator Rotation = GetActorRotation();
+		if (Rotation != CachedRotation)
+		{
+			CachedRotation = Rotation;
+			Multicast_Rotation(Rotation);
+		}
+		FVector Location = GetActorLocation();
+		if (Location != CachedLocation)
+		{
+			CachedLocation = Location;
+			Multicast_Location(Location);
+		}
+	}
 	ShootTimeRemaining -= DeltaTime;
 }
 
@@ -121,7 +127,7 @@ void AVTTankCharacter::TryShootCannon_Implementation()
 {
 	if (ShootTimeRemaining <= 0.f)
 	{
-		FTransform SpawnTransform(FRotator(), GetActorLocation(), FVector(1, 1, 1));
+		FTransform SpawnTransform(GetActorRotation(), GetActorLocation(), FVector(1, 1, 1));
 
 		AVTCannonBall* CannonBall = Cast<AVTCannonBall>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, CannonBallActor, SpawnTransform));
 		//Spawning the cannonball with the target passed

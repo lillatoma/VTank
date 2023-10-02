@@ -43,29 +43,19 @@ public:
 	UFUNCTION(Server, Reliable)
 		void ServerUpdateCachedDestination(FVector Dest);
 
-	UFUNCTION(Server, Reliable)
-		void AddScore();
-
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite)
 		FVector CachedDestination;
 
 	void GenerateRandomUsername();
-
-	UPROPERTY(VisibleAnywhere)
-		FString Username = FString("Player");
-
-	UPROPERTY(replicated, EditAnywhere, BlueprintReadWrite)
-		int Score = 0;
 public:
 	UFUNCTION(Client, Reliable)
 		virtual void SpawnUISpawner();
 
 	UFUNCTION(Client, Reliable)
 		virtual void FindUISpawner();
-
-	virtual void CallUpdateUI();
 	UFUNCTION(Client, Reliable)
-		virtual void CallUpdateUIClient();
+		virtual void CallUpdateUI();
+
 	UFUNCTION(Client, Reliable)
 			virtual void DelayedCallUpdateUI();
 
@@ -78,9 +68,6 @@ private:
 		class AVT_UISpawner* Spawner;
 
 protected:
-	/** True if the controlled character should navigate to the mouse cursor. */
-	uint32 bMoveToMouseCursor : 1;
-
 	virtual void SetupInputComponent() override;
 
 	// To add mapping context

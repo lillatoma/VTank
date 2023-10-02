@@ -18,8 +18,6 @@ void AVTGameModeBase::PostLogin(APlayerController* NewPlayer)
 	if (AVTPC)
 	{
 		AVTPC->GenerateRandomUsername();
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("%s connected"), *AVTPC->Username));
-		//AVTPC->SpawnUISpawner();
 		AVTPC->FindUISpawner(); 
 	
 		TArray<AActor*> FoundActors;
@@ -46,28 +44,4 @@ void AVTGameModeBase::BeginPlay()
 }
 
 
-
-TArray<FPlayerScoreboardInfo> AVTGameModeBase::GetScoreboardInfo()
-{
-	TArray<FPlayerScoreboardInfo> Info;
-	
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AVTPlayerController::StaticClass(), FoundActors);
-
-	for (int i = 0; i < FoundActors.Num(); i++)
-	{
-		AVTPlayerController* Conti = Cast<AVTPlayerController>(FoundActors[i]);
-
-		if (Conti)
-		{
-			FPlayerScoreboardInfo Bit;
-			Bit.Name = Conti->Username;
-			Bit.Score = Conti->Score;
-
-			Info.Add(Bit);
-		}
-	}
-
-	return Info;
-}
 

@@ -23,23 +23,6 @@ FString UUW_Game::GetScoreboardText()
 	return FString("Can't find, sorry");
 }
 
-bool UUW_Game::FindGameMode()
-{
-	if (StoredGameMode)
-		return true;
-
-	AGameModeBase* GameMode = (GetWorld()->GetAuthGameMode());
-
-	AVTGameModeBase* AVTMode = Cast<AVTGameModeBase>(GameMode);
-
-	if (AVTMode)
-	{
-		StoredGameMode = AVTMode;
-		return true;
-	}
-	return false;
-}
-
 bool UUW_Game::FindGameState()
 {
 	if (StoredGameState)

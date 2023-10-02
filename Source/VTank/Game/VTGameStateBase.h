@@ -4,8 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameStateBase.h"
-#include "VTGameModeBase.h"
 #include "VTGameStateBase.generated.h"
+
+
+USTRUCT(Blueprintable)
+struct FPlayerScoreboardInfo
+{
+	GENERATED_BODY()
+
+	FString Name;
+	int Score;
+};
 
 /**
  * 

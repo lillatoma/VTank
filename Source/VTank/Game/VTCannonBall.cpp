@@ -37,7 +37,7 @@ void AVTCannonBall::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//Forcing velocity, because there was some weird glitch where the cannonball started with 0 velocity
-	//and it was set to only overlap everything reacted to the original tank moving through
+	//and it was set to only overlap everything, but somehow reacted to the original tank moving
 	Mesh->SetPhysicsLinearVelocity(ForcedVelocity);
 }
 
@@ -73,8 +73,6 @@ void AVTCannonBall::CallAddScore()
 
 void AVTCannonBall::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
-	
 	AVTTankCharacter* IgnoreTank = Cast<AVTTankCharacter>(GetOwner());
 	AVTTankCharacter* Tank = Cast<AVTTankCharacter>(OtherActor);
 	
@@ -89,7 +87,7 @@ void AVTCannonBall::OverlapBegin(UPrimitiveComponent* OverlappedComponent, AActo
 
 		if (Controller && GameMode)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Respawning")));
+		//	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Respawning")));
 			AActor* BestSpot = GameMode->ChoosePlayerStart(Controller);
 			GameMode->RestartPlayerAtPlayerStart(Controller, BestSpot);
 			Tank->SetActorLocation(BestSpot->GetActorLocation());
