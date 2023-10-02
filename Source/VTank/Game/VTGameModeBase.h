@@ -18,14 +18,19 @@ UCLASS()
 class VTANK_API AVTGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-
+		 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int PointsToWin = 10;
 
 
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 	
+	virtual void StopGame(FString WinnerName);
+
+	virtual void RestartTheGame();
 
 protected:
 	virtual void BeginPlay() override; 

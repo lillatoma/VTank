@@ -18,9 +18,26 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		FString GetScoreboardText();
+	 
+	UFUNCTION(BlueprintCallable)
+		void SetWinText(const FString& NewWinText);
+
+	UFUNCTION(BlueprintCallable)
+		virtual void OnReadyButtonClick();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void UpdateScoreboard();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void OpenReadyScreen();
+
+
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void UpdateReadiedCount(int ReadiedCount, int TotalCount);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FString WinText = FString("Unnamed reached point X and won");
 
 private:
 
@@ -31,4 +48,6 @@ private:
 		class AVTGameStateBase* StoredGameState;
 
 	bool FindGameState();
+
+
 };

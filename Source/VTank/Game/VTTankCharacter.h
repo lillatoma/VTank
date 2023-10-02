@@ -56,7 +56,7 @@ public:
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly)
 		float ShootDelay = 1.0f;
 	UPROPERTY(EditAnyWhere, BlueprintReadOnly)
-		float ShotSpeed = 1000.0f;
+		float ShotSpeed = 1000.0f; 
 
 private:
 
@@ -80,7 +80,6 @@ public:
 
 	UFUNCTION(NetMulticast, Reliable)
 		void Multicast_Location(FVector Location);
-
 
 
 #pragma endregion

@@ -54,3 +54,21 @@ void AVT_UISpawner::CallUpdateScoreboard()
 	if (ScoreboardWidget)
 		ScoreboardWidget->UpdateScoreboard();
 }
+
+void AVT_UISpawner::CallOpenReadyScreen()
+{
+	if (ScoreboardWidget)
+		ScoreboardWidget->OpenReadyScreen();
+}
+
+void AVT_UISpawner::CallSetWinText(const FString& WinText)
+{
+	if (ScoreboardWidget)
+		ScoreboardWidget->SetWinText(WinText);
+}
+
+void AVT_UISpawner::CallUpdateReadiedCount(int Count, int TotalCount)
+{
+	if (ScoreboardWidget)
+		ScoreboardWidget->UpdateReadiedCount(Count, TotalCount);
+}

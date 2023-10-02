@@ -25,6 +25,10 @@ public:
 
 	//UFUNCTION(Client, Reliable)
 		virtual void CallUpdateScoreboard();
+		virtual void CallOpenReadyScreen();
+		virtual void CallSetWinText(const FString& WinText);
+		virtual void CallUpdateReadiedCount(int Count, int TotalCount);
+
 
 protected:
 	// Called when the game starts or when spawned

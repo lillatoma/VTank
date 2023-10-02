@@ -38,6 +38,9 @@ public:
 		class UInputAction* ShootAction;
 
 	UFUNCTION(Server, Reliable)
+		void SetReadiedForNextGame();
+
+	UFUNCTION(Server, Reliable)
 		void CallSimpleMove();
 
 	UFUNCTION(Server, Reliable)
@@ -47,7 +50,7 @@ public:
 		FVector CachedDestination;
 
 	void GenerateRandomUsername();
-public:
+public: 
 	UFUNCTION(Client, Reliable)
 		virtual void SpawnUISpawner();
 
@@ -57,7 +60,21 @@ public:
 		virtual void CallUpdateUI();
 
 	UFUNCTION(Client, Reliable)
+		virtual void OpenReadyScreen();
+
+	UFUNCTION(Client, Reliable)
+		virtual void UpdateUIWinText(const FString& WinText);
+
+	UFUNCTION(Client, Reliable)
+		virtual void UpdateReadiedCount(int Count, int TotalCount);
+
+	UFUNCTION(Client, Reliable)
 			virtual void DelayedCallUpdateUI();
+
+
+
+	UFUNCTION(NetMulticast, Reliable)
+		void StopAllMovementFromThisPoint();
 
 private:
 
@@ -66,6 +83,8 @@ private:
 
 	UPROPERTY()
 		class AVT_UISpawner* Spawner;
+
+	bool bPossibleToMove = true;
 
 protected:
 	virtual void SetupInputComponent() override;

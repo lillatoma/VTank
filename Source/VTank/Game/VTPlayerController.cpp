@@ -77,12 +77,16 @@ void AVTPlayerController::SetupInputComponent()
 
 void AVTPlayerController::OnInputStarted()
 {
+	if (!bPossibleToMove)
+		return;
 	StopMovement();
 }
 
 // Triggered every frame when the input is held down
 void AVTPlayerController::OnSetDestinationTriggered()
 {
+	if (!bPossibleToMove)
+		return;
 	// We look for the location in the world where the player has pressed the input
 	FHitResult Hit;
 	bool bHitSuccessful = false;
@@ -108,11 +112,17 @@ void AVTPlayerController::OnSetDestinationTriggered()
 
 void AVTPlayerController::OnSetDestinationReleased()
 {
+	if (!bPossibleToMove)
+		return;
+
 	CallSimpleMove();
 }
 
 void AVTPlayerController::OnLaunchCannonTriggered()
 {
+	if (!bPossibleToMove)
+		return;
+
 	APawn* ControlledPawn = GetPawn();
 
 	AVTTankCharacter* Tank = Cast<AVTTankCharacter>(ControlledPawn);
@@ -120,6 +130,8 @@ void AVTPlayerController::OnLaunchCannonTriggered()
 	if (Tank)
 		Tank->TryShootCannon();
 }
+
+
 
 void AVTPlayerController::GenerateRandomUsername()
 {
@@ -150,6 +162,29 @@ void AVTPlayerController::CallUpdateUI_Implementation()
 		Spawner->CallUpdateScoreboard();
 }
 
+void AVTPlayerController::OpenReadyScreen_Implementation()
+{
+	if (Spawner)
+		Spawner->CallOpenReadyScreen();
+}
+
+void AVTPlayerController::StopAllMovementFromThisPoint_Implementation()
+{
+	bPossibleToMove = false;
+}
+
+void AVTPlayerController::UpdateUIWinText_Implementation(const FString& WinText)
+{
+	if (Spawner)
+		Spawner->CallSetWinText(WinText);
+}
+
+void AVTPlayerController::UpdateReadiedCount_Implementation(int Count, int TotalCount)
+{
+	if (Spawner)
+		Spawner->CallUpdateReadiedCount(Count, TotalCount);
+}
+
 void AVTPlayerController::DelayedCallUpdateUI_Implementation()
 {
 	FTimerHandle Handle;
@@ -159,11 +194,17 @@ void AVTPlayerController::DelayedCallUpdateUI_Implementation()
 
 void AVTPlayerController::CallSimpleMove_Implementation()
 {
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
+	if(bPossibleToMove)
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
 }
 
 
-
+void AVTPlayerController::SetReadiedForNextGame_Implementation()
+{
+	AVT_PlayerState* State = GetPlayerState<AVT_PlayerState>();
+	if (State)
+		State->SetReadyForNextGame();
+}
 
 void AVTPlayerController::SpawnUISpawner_Implementation()
 {

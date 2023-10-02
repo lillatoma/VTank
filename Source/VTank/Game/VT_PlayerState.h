@@ -25,6 +25,14 @@ public:
 	UFUNCTION()
 		void OnRep_UserScore();
 
+	UFUNCTION()
+		void OnRep_bReadiedAfterGameEnd();
+
+	UFUNCTION()
+		bool HasReadied() const {
+		return bReadiedAfterGameEnd;
+	};
+
 protected:
 	UPROPERTY(Replicated, VisibleAnywhere)
 		FString Username = FString("Unnamed");
@@ -32,13 +40,25 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_UserScore, VisibleAnywhere)
 		int UserScore = 0;
 
+	UPROPERTY(ReplicatedUsing = OnRep_bReadiedAfterGameEnd)
+		bool bReadiedAfterGameEnd = false;
 
+	bool CheckForWinningScore();
 
 public:
+	void SetReadyForNextGame();
+	
 	void AddScore();
 	void SetUsername(FString NewName);
 
 	FString GetUsername() const;
 	int GetUserScore() const;
 
+
+
+private:
+	UPROPERTY()
+		class AVTGameModeBase* StoredGameMode;
+
+	class AVTGameModeBase* FindGameMode();
 };
