@@ -216,13 +216,13 @@ void AVTPlayerController::SpawnUISpawner_Implementation()
 	{
 
 		UGameplayStatics::FinishSpawningActor(Spawner, SpawnTransform);
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Spawner spawned")));
+		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Spawner spawned")));
 	}
 }
 
 void AVTPlayerController::FindUISpawner_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Finding ui")));
+	
 
 	FTransform SpawnTransform(FRotator(), FVector(0, 0, 0), FVector(1, 1, 1));
 
@@ -234,8 +234,4 @@ void AVTPlayerController::FindUISpawner_Implementation()
 
 	Spawner = Cast<AVT_UISpawner>(PiecesArray[0]);
 
-	if (Spawner)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("Spawner found")));
-	}
 }

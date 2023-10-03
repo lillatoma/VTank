@@ -58,7 +58,7 @@ void AVTGameModeBase::StopGame(FString WinnerName)
 void AVTGameModeBase::RestartTheGame()
 {
 	FString LevelName = GetWorld()->GetMapName();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Loading: %s"), *LevelName));
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Loading: %s"), *LevelName));
 	//GetWorld()->ServerTravel(LevelName + FString("?listen"), true);
 	
 	//UGameplayStatics::OpenLevel(GetWorld(), FName(LevelName));

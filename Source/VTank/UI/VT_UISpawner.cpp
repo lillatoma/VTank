@@ -44,7 +44,7 @@ void AVT_UISpawner::SpawnScoreboardWidget()
 		{
 			ScoreboardWidget->AddToViewport();
 			ScoreboardWidget->UpdateScoreboard();
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("scoreboard spawned")));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, FString::Printf(TEXT("scoreboard spawned")));
 		}
 	}
 }
